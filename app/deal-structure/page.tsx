@@ -395,17 +395,22 @@ function DealStructureContent() {
     }, 100);
   };
 
-  const updateSellerFinancing = (field: string, value: number) => {
+  const updateSellerFinancing = (
+    field: keyof NonNullable<DealStructure['sellerFinancing']>,
+    value: number | boolean
+  ) => {
     if (!dealStructure.sellerFinancing) return;
 
-    const updated = { ...dealStructure.sellerFinancing };
-    updated[field as keyof typeof updated] = value as any;
+    const updated = {
+      ...dealStructure.sellerFinancing,
+      [field]: value,
+    };
 
     if (field === 'amount' || field === 'interestRate' || field === 'term') {
       updated.monthlyPayment = calculateMonthlyPayment(
-        field === 'amount' ? value : updated.amount,
-        field === 'interestRate' ? value : updated.interestRate,
-        field === 'term' ? value : updated.term
+        updated.amount,
+        updated.interestRate,
+        updated.term
       );
     }
 
@@ -416,16 +421,19 @@ function DealStructureContent() {
     calculateTotal();
   };
 
-  const updateWrapAround = (field: string, value: number) => {
+  const updateWrapAround = (
+    field: keyof NonNullable<DealStructure['wrapAround']>,
+    value: number | string
+  ) => {
     if (!dealStructure.wrapAround) return;
 
-    const updated = { ...dealStructure.wrapAround };
+    const updated = {
+      ...dealStructure.wrapAround,
+      [field]: value,
+    };
 
     if (field === 'newMonthlyPayment') {
-      updated.newMonthlyPayment = value;
-      updated.monthlyProfit = value - updated.existingPayment;
-    } else if (field === 'newInterestRate') {
-      updated.newInterestRate = value;
+      updated.monthlyProfit = (value as number) - updated.existingPayment;
     }
 
     setDealStructure(prev => ({
@@ -435,11 +443,16 @@ function DealStructureContent() {
     calculateTotal();
   };
 
-  const updateLeaseOption = (field: string, value: number) => {
+  const updateLeaseOption = (
+    field: keyof NonNullable<DealStructure['leaseOption']>,
+    value: number | string
+  ) => {
     if (!dealStructure.leaseOption) return;
 
-    const updated = { ...dealStructure.leaseOption };
-    updated[field as keyof typeof updated] = value as any;
+    const updated = {
+      ...dealStructure.leaseOption,
+      [field]: value,
+    };
 
     setDealStructure(prev => ({
       ...prev,
@@ -748,10 +761,7 @@ function DealStructureContent() {
                         <input
                           type="checkbox"
                           checked={dealStructure.sellerFinancing.securement}
-                          onChange={(e) => setDealStructure(prev => ({
-                            ...prev,
-                            sellerFinancing: { ...prev.sellerFinancing!, securement: e.target.checked }
-                          }))}
+                          onChange={(e) => updateSellerFinancing('securement', e.target.checked)}
                           className="w-4 h-4 text-blue-600 rounded"
                         />
                         <span className="text-sm text-gray-700">Оформить Securement (обременение) на недвижимость</span>
