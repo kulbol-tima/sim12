@@ -4,6 +4,7 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useStore } from '../../lib/store';
 
 interface DealStructure {
   subjectTo?: {
@@ -74,6 +75,7 @@ interface Document {
 }
 
 function DealStructureContent() {
+  const { scenario } = useStore();
   const searchParams = useSearchParams();
   const scenarioId = searchParams.get('scenario');
 
@@ -103,24 +105,27 @@ function DealStructureContent() {
     }
   ]);
 
-  const scenario = {
-    property: {
-      address: '1245 Elm Street, Austin, TX 78704',
-      fmv: 350000,
-      owedAmount: 315000,
-      monthlyPayment: 2100,
-      interestRate: 3.5
-    },
-    seller: {
-      name: 'Robert Johnson',
-      flexibility: 'high',
-      additionalAssets: [
-        { type: 'vehicle', description: '2018 Ford F-150', value: 28000 },
-        { type: 'boat', description: 'Sea Ray Boat', value: 15000 },
-        { type: 'jewelry', description: 'Ювелирные изделия', value: 8000 }
-      ]
-    }
-  };
+  if (!scenario) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i className="ri-file-list-3-line text-3xl text-gray-400"></i>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Сценарий не найден</h3>
+          <p className="text-gray-500 mb-6">
+            Пожалуйста, сгенерируйте сценарий, чтобы начать структурирование сделки.
+          </p>
+          <Link
+            href="/scenario-generator"
+            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            К генератору сценариев
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const enableSubjectTo = (enabled: boolean) => {
     if (enabled) {
@@ -301,7 +306,31 @@ function DealStructureContent() {
   const enableAssetTrade = (enabled: boolean) => {
     if (enabled) {
       const newStructure = { ...dealStructure };
-      const selectedAssets = scenario.seller.additionalAssets.slice(0, 2);
+      const selectedAssets = scenario.seller.additionalAssets
+        ? scenario.seller.additionalAssets.slice(0, 2).map(asset => {
+          const match = asset.match(/(.+) \(\$(.+)\)/);
+          if (match) {
+            let type = 'other';
+            if (match[1].toLowerCase().includes('ford') || match[1].toLowerCase().includes('sea ray')) {
+              type = 'vehicle';
+            } else if (match[1].toLowerCase().includes('harley')) {
+              type = 'motorcycle';
+            } else if (match[1].toLowerCase().includes('ювелирные')) {
+              type = 'jewelry';
+            }
+            return {
+              type: type,
+              description: match[1],
+              value: parseInt(match[2].replace(/,/g, ''), 10)
+            };
+          }
+          return {
+            type: 'other',
+            description: asset,
+            value: 0
+          };
+        })
+        : [];
       const totalValue = selectedAssets.reduce((sum, asset) => sum + asset.value, 0);
 
       newStructure.assetTrade = {
@@ -357,7 +386,7 @@ function DealStructureContent() {
 
       newTotal.userMonthlyProfit =
         (dealStructure.wrapAround?.monthlyProfit || 0) +
-        (dealStructure.leaseOption ? (dealStructure.leaseOption.monthlyRent - scenario.property.monthlyPayment) : 0);
+        (dealStructure.leaseOption ? (dealStructure.leaseOption.monthlyRent - (scenario.property.monthlyPayment || 0)) : 0);
 
       setDealStructure(prev => ({
         ...prev,
@@ -908,7 +937,7 @@ function DealStructureContent() {
 
                       <div className="bg-green-50 p-3 rounded-lg">
                         <div className="text-sm text-green-700">
-                          <p><strong>Ваша прибыль:</strong> ${(dealStructure.leaseOption.monthlyRent - scenario.property.monthlyPayment).toLocaleString()}/мес + потенциальный рост цены</p>
+                          <p><strong>Ваша прибыль:</strong> ${(dealStructure.leaseOption.monthlyRent - (scenario.property.monthlyPayment || 0)).toLocaleString()}/мес + потенциальный рост цены</p>
                           <p><strong>Общий кредит покупателя:</strong> ${(dealStructure.leaseOption.downPayment + dealStructure.leaseOption.rentCredit * dealStructure.leaseOption.optionTerm).toLocaleString()}</p>
                         </div>
                       </div>

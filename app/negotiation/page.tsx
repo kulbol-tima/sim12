@@ -4,6 +4,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useStore } from '../../lib/store';
 
 interface Message {
   id: number;
@@ -31,6 +32,7 @@ interface OfferComponent {
 }
 
 function NegotiationContent() {
+  const { scenario } = useStore();
   const searchParams = useSearchParams();
   const scenarioId = searchParams.get('scenario');
 
@@ -42,18 +44,29 @@ function NegotiationContent() {
   const [currentOffer, setCurrentOffer] = useState<OfferComponent[]>([]);
   const [negotiationPhase, setNegotiationPhase] = useState<'greeting' | 'discovery' | 'offer' | 'response'>('greeting');
 
-  const seller = {
-    name: 'Robert Johnson',
-    situation: 'pre-foreclosure',
-    fmv: 350000,
-    owed: 315000,
-    monthlyPayment: 2100,
-    arrearsMonths: 4,
-    arrearsAmount: 8400,
-    flexibility: 'high',
-    motivation: 'Избежать foreclosure, сохранить кредитную историю',
-    timeframe: '30-60 дней до аукциона'
-  };
+  if (!scenario) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i className="ri-file-list-3-line text-3xl text-gray-400"></i>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Сценарий не найден</h3>
+          <p className="text-gray-500 mb-6">
+            Пожалуйста, сгенерируйте сценарий, чтобы начать переговоры.
+          </p>
+          <Link
+            href="/scenario-generator"
+            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            К генератору сценариев
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const { seller, property, financials } = scenario;
 
   const questionOptions: { [key: string]: QuestionOption } = {
     greeting: {
@@ -68,7 +81,7 @@ function NegotiationContent() {
       id: 'mortgage_details',
       text: 'Можете рассказать подробнее о ипотеке? Сколько осталось выплачивать и какова просрочка?',
       category: 'financial',
-      response: 'У нас осталось $315,000 по ипотеке, ежемесячный платеж $2,100. Мы не платили уже 4 месяца, набежало $8,400 долга. Банк грозит foreclosure.',
+      response: `У нас осталось $${property.owedAmount.toLocaleString()} по ипотеке, ежемесячный платеж $${property.monthlyPayment.toLocaleString()}. Мы не платили уже ${financials.arrearsMonths} месяца, набежало $${financials.arrearsAmount?.toLocaleString()} долга. Банк грозит foreclosure.`,
       emotion: 'worried',
       unlocks: ['house_value', 'foreclosure_timeline', 'other_debts']
     },
@@ -76,7 +89,7 @@ function NegotiationContent() {
       id: 'house_value',
       text: 'А какая, по вашему мнению, рыночная стоимость дома сейчас?',
       category: 'financial',
-      response: 'Риелтор говорил около $350,000, может чуть меньше. Мы покупали за $380,000 три года назад, но рынок немного просел.',
+      response: `Риелтор говорил около $${property.fmv.toLocaleString()}, может чуть меньше. Мы покупали за $${(property.fmv * 1.1).toLocaleString()} три года назад, но рынок немного просел.`,
       emotion: 'neutral',
       unlocks: ['selling_costs', 'equity_situation']
     },
@@ -196,7 +209,7 @@ function NegotiationContent() {
     currentOffer.forEach((component, index) => {
       switch (component.type) {
         case 'subject-to':
-          offerText += `${index + 1}. Я принимаю дом "subject to existing loan" - беру на себя ваши платежи по ипотеке $${seller.monthlyPayment}/месяц.\\n`;
+          offerText += `${index + 1}. Я принимаю дом "subject to existing loan" - беру на себя ваши платежи по ипотеке $${property.monthlyPayment}/месяц.\\n`;
           break;
         case 'seller-financing':
           offerText += `${index + 1}. Вы финансируете $${component.value?.toLocaleString()} под ${component.rate}% годовых (seller financing).\\n`;
@@ -312,7 +325,7 @@ function NegotiationContent() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Переговоры с продавцом</h1>
-              <p className="text-gray-600">Встреча с {seller.name} • {seller.situation}</p>
+              <p className="text-gray-600">Встреча с {seller.name} • {scenario.type}</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
@@ -351,15 +364,15 @@ function NegotiationContent() {
                 </div>
                 <div>
                   <span className="text-gray-600 block">FMV дома:</span>
-                  <span className="font-medium">${seller.fmv.toLocaleString()}</span>
+                  <span className="font-medium">${property.fmv.toLocaleString()}</span>
                 </div>
                 <div>
                   <span className="text-gray-600 block">Остаток по ипотеке:</span>
-                  <span className="font-medium">${seller.owed.toLocaleString()}</span>
+                  <span className="font-medium">${property.owedAmount.toLocaleString()}</span>
                 </div>
                 <div>
                   <span className="text-gray-600 block">Просрочка:</span>
-                  <span className="font-medium text-red-600">${seller.arrearsAmount.toLocaleString()}</span>
+                  <span className="font-medium text-red-600">${financials.arrearsAmount?.toLocaleString()}</span>
                 </div>
                 <div>
                   <span className="text-gray-600 block">Временные рамки:</span>
@@ -497,7 +510,7 @@ function NegotiationContent() {
                   </button>
 
                   <button
-                    onClick={() => addOfferComponent({ type: 'seller-pays-buyer', value: seller.arrearsAmount + 5000, details: `Продавец доплачивает $${(seller.arrearsAmount + 5000).toLocaleString()}` })}
+                    onClick={() => addOfferComponent({ type: 'seller-pays-buyer', value: (financials.arrearsAmount || 0) + 5000, details: `Продавец доплачивает $${((financials.arrearsAmount || 0) + 5000).toLocaleString()}` })}
                     className="w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center space-x-2">

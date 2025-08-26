@@ -3,49 +3,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-
-interface Scenario {
-  id: number;
-  type: 'pre-foreclosure' | 'relocation' | 'stuck-listing' | 'low-equity' | 'high-equity';
-  title: string;
-  property: {
-    address: string;
-    fmv: number;
-    owedAmount: number;
-    monthlyPayment: number;
-    bedrooms: number;
-    bathrooms: number;
-    sqft: number;
-    yearBuilt: number;
-    condition: 'excellent' | 'cosmetic-repair';
-    conditionDetails: string;
-    propertyTaxes: number;
-    repairCosts: number;
-    repairCategory: 'minor' | 'major';
-    repairDetails: string;
-    rentalIncome: number;
-  };
-  seller: {
-    name: string;
-    age: number;
-    situation: string;
-    motivation: string;
-    timeframe: string;
-    flexibility: 'high' | 'medium' | 'low';
-    additionalAssets?: string[];
-  };
-  financials: {
-    equity: number;
-    ltv: number;
-    loanType: 'conventional' | 'fha' | 'va' | 'other';
-    arrearsAmount?: number;
-    arrearsMonths?: number;
-    taxArrears?: number;
-    monthsOnMarket?: number;
-    carryingCosts?: number;
-    taxesOwed?: number;
-  };
-}
+import { Scenario } from '../../lib/types';
+import { useStore } from '../../lib/store';
 
 const scenarioTypes = {
   'pre-foreclosure': {
@@ -88,7 +47,7 @@ const loanTypes = {
 };
 
 export default function ScenarioGeneratorPage() {
-  const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
+  const { scenario: currentScenario, setScenario } = useStore();
   const [selectedType, setSelectedType] = useState<string>('random');
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -96,12 +55,12 @@ export default function ScenarioGeneratorPage() {
     setIsGenerating(true);
 
     setTimeout(() => {
-      const scenarioType = type === 'random' ? 
+      const scenarioType = type === 'random' ?
         Object.keys(scenarioTypes)[Math.floor(Math.random() * Object.keys(scenarioTypes).length)] :
         type;
 
       const scenario = createScenario(scenarioType as keyof typeof scenarioTypes);
-      setCurrentScenario(scenario);
+      setScenario(scenario);
       setIsGenerating(false);
     }, 1500);
   };
