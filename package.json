@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
+    "dev": "NODE_ENV=development node_modules/.bin/next dev -H 0.0.0.0 -p 3000",
+    "build": "node_modules/.bin/next build",
     "lint": "next lint"
   },
   "dependencies": {
@@ -12,7 +12,8 @@
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^3.0.2"
+    "recharts": "^3.0.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
