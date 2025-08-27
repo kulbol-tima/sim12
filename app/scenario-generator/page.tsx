@@ -431,7 +431,7 @@ export default function ScenarioGeneratorPage() {
                   <i className="ri-file-list-3-line text-3xl text-gray-400"></i>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Выберите тип сценария</h3>
-                <p className="text-gray-500">Нажмите "Сгенерировать сценарий" чтобы создать новую ситуацию для отработки навыков</p>
+                <p className="text-gray-500">Нажмите &quot;Сгенерировать сценарий&quot; чтобы создать новую ситуацию для отработки навыков</p>
               </div>
             ) : (
               <div className="space-y-6">
