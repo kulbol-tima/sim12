@@ -77,7 +77,7 @@ interface Document {
 function DealStructureContent() {
   const { scenario } = useStore();
   const searchParams = useSearchParams();
-  const scenarioId = searchParams.get('scenario');
+  searchParams.get('scenario');
 
   const [currentStep, setCurrentStep] = useState<'structure' | 'documentation' | 'closing'>('structure');
   const [dealStructure, setDealStructure] = useState<DealStructure>({
@@ -685,7 +685,7 @@ function DealStructureContent() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">Seller Financing</h3>
-                        <p className="text-sm text-gray-500">Продавец становится "банком" для части суммы</p>
+                        <p className="text-sm text-gray-500">Продавец становится &quot;банком&quot; для части суммы</p>
                       </div>
                     </div>
                     <label className="flex items-center cursor-pointer">
@@ -779,7 +779,7 @@ function DealStructureContent() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">Wrap-Around Mortgage</h3>
-                        <p className="text-sm text-gray-500">Новый займ, который "оборачивает" существующую ипотеку</p>
+                        <p className="text-sm text-gray-500">Новый займ, который &quot;оборачивает&quot; существующую ипотеку</p>
                       </div>
                     </div>
                     <label className="flex items-center cursor-pointer">

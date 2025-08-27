@@ -20,7 +20,7 @@ const scenarioTypes = {
     icon: 'ri-truck-line'
   },
   'stuck-listing': {
-    name: 'Дом "висит" на продаже',
+    name: 'Дом &quot;висит&quot; на продаже',
     description: 'Объект долго не продается, продавец несет двойные платежи',
     color: 'orange',
     icon: 'ri-time-line'

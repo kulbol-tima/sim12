@@ -34,7 +34,7 @@ interface OfferComponent {
 function NegotiationContent() {
   const { scenario } = useStore();
   const searchParams = useSearchParams();
-  const scenarioId = searchParams.get('scenario');
+  searchParams.get('scenario');
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [availableQuestions, setAvailableQuestions] = useState<string[]>([]);
@@ -43,6 +43,21 @@ function NegotiationContent() {
   const [showOfferBuilder, setShowOfferBuilder] = useState(false);
   const [currentOffer, setCurrentOffer] = useState<OfferComponent[]>([]);
   const [negotiationPhase, setNegotiationPhase] = useState<'greeting' | 'discovery' | 'offer' | 'response'>('greeting');
+
+  useEffect(() => {
+    if (scenario && messages.length === 0) {
+      setMessages([
+        {
+          id: 1,
+          type: 'system',
+          text: `Вы встречаетесь с ${scenario.seller.name}. Он выглядит обеспокоенным, но готов к разговору. Начните с установления контакта.`,
+          timestamp: new Date()
+        }
+      ]);
+      setAvailableQuestions(['greeting']);
+      setNegotiationPhase('greeting');
+    }
+  }, [scenario, messages.length]);
 
   if (!scenario) {
     return (
@@ -142,21 +157,6 @@ function NegotiationContent() {
       unlocks: ['offer_builder']
     }
   };
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          id: 1,
-          type: 'system',
-          text: `Вы встречаетесь с ${seller.name}. Он выглядит обеспокоенным, но готов к разговору. Начните с установления контакта.`,
-          timestamp: new Date()
-        }
-      ]);
-      setAvailableQuestions(['greeting']);
-      setNegotiationPhase('greeting');
-    }
-  }, []);
 
   const askQuestion = (questionId: string) => {
     const option = questionOptions[questionId];

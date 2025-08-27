@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Property {
   address: string;
@@ -58,14 +58,10 @@ export default function PostClosingSimulator() {
   const [showSaleOptions, setShowSaleOptions] = useState(false);
   const [buyerStatus, setBuyerStatus] = useState<'current' | 'defaulted' | 'completed'>('current');
   const [defaultMonth, setDefaultMonth] = useState<number | null>(null);
-  const [simulationSpeed, setSimulationSpeed] = useState<'normal' | 'fast'>('normal');
+  useState<'normal' | 'fast'>('normal');
   const [activeTab, setActiveTab] = useState<'payments' | 'equity' | 'refinancing' | 'exit'>('payments');
 
-  useEffect(() => {
-    generatePaymentHistory();
-  }, [currentMonth]);
-
-  const generatePaymentHistory = () => {
+  const generatePaymentHistory = useCallback(() => {
     const paymentHistory: Payment[] = [];
     const defaultPoint = Math.random() < 0.15 ? Math.floor(Math.random() * currentMonth) + 4 : null;
     
@@ -88,7 +84,11 @@ export default function PostClosingSimulator() {
       setBuyerStatus('defaulted');
       setDefaultMonth(defaultPoint);
     }
-  };
+  }, [currentMonth, currentProperty.monthlyPayment]);
+
+  useEffect(() => {
+    generatePaymentHistory();
+  }, [generatePaymentHistory]);
 
   const advanceMonth = () => {
     const newMonth = currentMonth + 1;
@@ -120,10 +120,6 @@ export default function PostClosingSimulator() {
       payment.month >= currentMonth ? { ...payment, received: false, daysLate: 30 } : payment
     );
     setPayments(updatedPayments);
-  };
-
-  const initiateRefinancing = () => {
-    setShowRefinancing(true);
   };
 
   const getRefinancingOffers = (): RefinancingOffer[] => {
@@ -161,7 +157,6 @@ export default function PostClosingSimulator() {
   };
 
   const getSaleOptions = (): SaleOption[] => {
-    const currentEquity = currentProperty.currentValue - currentProperty.loanBalance;
     const totalCashFlow = payments.filter(p => p.received).reduce((sum, p) => sum + p.amount, 0);
     const totalInvestment = 15000; // Initial investment
     
