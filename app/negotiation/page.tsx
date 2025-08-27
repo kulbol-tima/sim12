@@ -182,7 +182,8 @@ function NegotiationContent() {
     setSellerEmotion(option.emotion);
 
     if (option.unlocks) {
-      setAvailableQuestions(prev => [...prev, ...option.unlocks.filter(id => !askedQuestions.has(id))]);
+      const unlocks = option.unlocks;
+      setAvailableQuestions(prev => [...prev, ...unlocks.filter(id => !askedQuestions.has(id))]);
     }
 
     if (questionId === 'creative_solution_intro') {
