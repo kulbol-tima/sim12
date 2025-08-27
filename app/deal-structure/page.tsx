@@ -1306,7 +1306,16 @@ function DealStructureContent() {
                   </div>
                 )}
 
-                {(Object.keys(dealStructure).some(key => key !== 'totalStructure' && dealStructure[key as keyof DealStructure]?.enabled)) && (
+                {
+                  const dealKeys: Array<keyof Omit<DealStructure, 'totalStructure'>> = [
+                    'subjectTo',
+                    'sellerFinancing',
+                    'wrapAround',
+                    'leaseOption',
+                    'wholesale',
+                    'assetTrade',
+                  ];
+                  (dealKeys.some(key => dealStructure[key]?.enabled)) && (
                   <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
                     <div className="flex items-center space-x-2 mb-2">
                       <i className="ri-gem-line text-purple-600"></i>
