@@ -1306,7 +1306,7 @@ function DealStructureContent() {
                   </div>
                 )}
 
-                {
+                {(() => {
                   const dealKeys: Array<keyof Omit<DealStructure, 'totalStructure'>> = [
                     'subjectTo',
                     'sellerFinancing',
@@ -1315,17 +1315,21 @@ function DealStructureContent() {
                     'wholesale',
                     'assetTrade',
                   ];
-                  (dealKeys.some(key => dealStructure[key]?.enabled)) && (
-                  <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <i className="ri-gem-line text-purple-600"></i>
-                      <span className="font-medium text-purple-900">Аксиома #6 выполнена!</span>
-                    </div>
-                    <p className="text-xs text-purple-700">
-                      Правильно структурированная сделка создает ценность для всех участников
-                    </p>
-                  </div>
-                )}
+                  if (dealKeys.some(key => dealStructure[key]?.enabled)) {
+                    return (
+                      <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <i className="ri-gem-line text-purple-600"></i>
+                          <span className="font-medium text-purple-900">Аксиома #6 выполнена!</span>
+                        </div>
+                        <p className="text-xs text-purple-700">
+                          Правильно структурированная сделка создает ценность для всех участников
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
                 <div className="pt-4 border-t">
                   <div className="text-xs text-gray-500 space-y-1">
