@@ -120,7 +120,7 @@ export default function Home() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Wrap-Around</h4>
-              <p className="text-gray-600 text-sm">Новый займ, "оборачивающий" существующую ипотеку</p>
+              <p className="text-gray-600 text-sm">Новый займ, &quot;оборачивающий&quot; существующую ипотеку</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Lease Option</h4>

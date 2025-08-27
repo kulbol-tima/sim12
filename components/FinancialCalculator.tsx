@@ -110,8 +110,8 @@ export default function FinancialCalculator() {
   });
 
   const [activeTab, setActiveTab] = useState('calculator');
-  const [showClosingDay, setShowClosingDay] = useState(false);
-  const [showPostClosing, setShowPostClosing] = useState(false);
+  useState(false);
+  const [, setShowPostClosing] = useState(false);
 
   // Re‑calculate everything whenever any input data changes
   useEffect(() => {
@@ -760,7 +760,7 @@ export default function FinancialCalculator() {
                   <h3 className="text-lg font-semibold mb-4 text-gray-800">Анализ и обоснование</h3>
 
                   <div className="space-y-3 mb-6">
-                    <h4 className="font-medium text-gray-700">Критерии "хорошего" долга:</h4>
+                      <h4 className="font-medium text-gray-700">Критерии &quot;хорошего&quot; долга:</h4>
                     <ul className="space-y-2">
                       {debtAnalysis.reasoning.map((reason, index) => (
                         <li key={index} className="flex items-start space-x-2">
