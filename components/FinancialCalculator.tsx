@@ -111,7 +111,7 @@ export default function FinancialCalculator() {
 
   const [activeTab, setActiveTab] = useState('calculator');
   useState(false);
-  const [, setShowPostClosing] = useState(false);
+  useState(false);
 
   // Re‑calculate everything whenever any input data changes
   useEffect(() => {
