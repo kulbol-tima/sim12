@@ -549,7 +549,7 @@ function NegotiationContent() {
                     </button>
 
                     <Link
-                      href={`/deal-structure?scenario=${scenarioId}`}
+                      href={`/deal-structure?scenario=${scenario.id}`}
                       className="w-full px-4 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors whitespace-nowrap cursor-pointer flex items-center justify-center space-x-2"
                     >
                       <i className="ri-file-settings-line"></i>
