@@ -1203,7 +1203,7 @@ export default function FinancialCalculator() {
               {/* Closing Actions */}
               <div className="flex justify-center space-x-4">
                 <button
-                  onClick={() => setShowClosingDay(true)}
+
                   className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors whitespace-nowrap cursor-pointer flex items-center space-x-2"
                 >
                   <i className="ri-play-circle-line"></i>
